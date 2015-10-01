@@ -1,0 +1,58 @@
+module frege_jsoup.JsoupParser where
+
+import frege.data.HashMap HM(HashMap)
+import frege_jsoup.NativeDefs ND
+
+data HTML =
+    Element { tag :: String, attrs :: HashMap String String, content :: [HTML] }
+  | Comment String
+  | DataNode String
+  | TextNode String
+  | XmlDeclaration String
+  | DocumentType String
+  | Document { title :: String, charset :: String, content :: [HTML] }
+
+makeAttributes :: ND.Node -> HashMap String String
+makeAttributes node =
+    HM.fromList attributePairs
+    where
+        attributes = ND.Attributes.asList $ ND.Node.attributes node
+        attributesList = ListSource.toList $ ND.List.toArray attributes
+        makePair att = (ND.Attribute.getKey att, ND.Attribute.getValue att)
+        attributePairs :: [(String, String)]
+        attributePairs = map makePair attributesList
+
+children :: ND.Node -> [ND.Node]
+children node =
+    ListSource.toList childrenArray
+    where
+        childrenArray = ND.List.toArray $ ND.Node.childNodes node
+
+convert :: ND.Node -> HTML
+convert n =
+    case asDocument of
+        Just d -> Document {
+            title = ND.Document.title d,
+            charset = ND.Charset.name $ ND.Document.charset d,
+            content = map convert $ children d }
+        Nothing -> case asTextNode of
+            Just tn -> TextNode $ ND.Node.toString tn
+            Nothing -> case asXmlDeclaration of
+                Just xmldef -> XmlDeclaration $ ND.Node.toString xmldef
+                Nothing -> case asDocumentType of
+                    Just dt -> DocumentType $ ND.Node.toString dt
+                    Nothing -> case asDataNode of
+                        Just dn -> DataNode $ ND.Node.toString dn
+                        Nothing -> case asComment of
+                            Just c -> Comment $ ND.Node.toString c
+                            Nothing -> Element {
+                                tag = ND.Node.nodeName n,
+                                attrs = makeAttributes n,
+                                content = map convert $ children n }
+    where
+        asTextNode = ND.JsoupHelper.nodeAsTextNode n
+        asXmlDeclaration = ND.JsoupHelper.nodeAsXmlDeclaration n
+        asDocumentType = ND.JsoupHelper.nodeAsDocumentType n
+        asDataNode = ND.JsoupHelper.nodeAsDataNode n
+        asComment = ND.JsoupHelper.nodeAsComment n
+        asDocument = ND.JsoupHelper.nodeAsDocument n

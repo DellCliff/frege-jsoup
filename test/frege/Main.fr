@@ -1,0 +1,24 @@
+module Main where
+
+import frege_jsoup.JsoupParser JP
+import frege_jsoup.NativeDefs ND
+
+derive Show JP.HTML
+
+main _ = do
+    html = "<!-- before -->" ++
+        "<!DOCTYPE html>" ++
+        "<html data-foo=\"bar\">" ++
+        "<head>" ++
+        "<meta charset=\"ISO-8859-1\" /><title>test title</title>" ++
+        "<script>function () { return 'lkjsdfsdf'; }</script>" ++
+        "<style>.someclass {color:red;}</style>" ++
+        "</head>" ++
+        "<body>" ++
+        "<form></form>" ++
+        "</body></html>"
+    xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Bag><Item /><Item /></Bag>"
+    parsed_html = JP.convert $ ND.Jsoup.parse html
+    parsed_xml = JP.convert $ ND.Jsoup.parse xml "" $ ND.Parser.xmlParser ()
+    println $ show parsed_html
+    println $ show parsed_xml

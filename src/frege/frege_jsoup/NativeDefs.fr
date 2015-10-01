@@ -1,0 +1,398 @@
+module frege_jsoup.NativeDefs where
+
+data JsoupHelper = pure native frege_jsoup.JsoupHelper where
+
+    pure native nodeAsElement "frege_jsoup.JsoupHelper.nodeAsElement" :: Node -> Maybe Element
+
+    pure native nodeAsTextNode "frege_jsoup.JsoupHelper.nodeAsTextNode" :: Node -> Maybe TextNode
+
+    pure native nodeAsXmlDeclaration "frege_jsoup.JsoupHelper.nodeAsXmlDeclaration" :: Node -> Maybe XmlDeclaration
+
+    pure native nodeAsDocumentType "frege_jsoup.JsoupHelper.nodeAsDocumentType" :: Node -> Maybe DocumentType
+
+    pure native nodeAsDataNode "frege_jsoup.JsoupHelper.nodeAsDataNode" :: Node -> Maybe DataNode
+
+    pure native nodeAsComment "frege_jsoup.JsoupHelper.nodeAsComment" :: Node -> Maybe Comment
+
+    pure native nodeAsDocument "frege_jsoup.JsoupHelper.nodeAsDocument" :: Node -> Maybe Document
+
+
+data TextNode = pure native org.jsoup.nodes.TextNode where
+
+  pure native new :: String -> String -> TextNode
+
+  pure native absUrl :: TextNode -> String -> String
+
+  pure native attr :: TextNode -> String -> String
+
+  pure native attributes :: TextNode -> Attributes
+
+  pure native createFromEncoded "org.jsoup.nodes.TextNode.createFromEncoded" :: String -> String -> TextNode
+
+  pure native equals :: TextNode -> Object -> Bool
+
+  pure native getWholeText :: TextNode -> String
+
+  pure native hasAttr :: TextNode -> String -> Bool
+
+  pure native hashCode :: TextNode -> Int
+
+  pure native isBlank :: TextNode -> Bool
+
+  pure native nodeName :: TextNode -> String
+
+  pure native text :: TextNode -> String
+
+  pure native toString :: TextNode -> String
+
+
+data XmlDeclaration = pure native org.jsoup.nodes.XmlDeclaration where
+
+  pure native new :: String -> String -> Bool -> XmlDeclaration
+
+  pure native getWholeDeclaration :: XmlDeclaration -> String
+
+  pure native nodeName :: XmlDeclaration -> String
+
+  pure native toString :: XmlDeclaration -> String
+
+
+data DocumentType = pure native org.jsoup.nodes.DocumentType where
+
+  pure native new :: String -> String -> String -> String -> DocumentType
+
+  pure native nodeName :: DocumentType -> String
+
+
+data DataNode = pure native org.jsoup.nodes.DataNode where
+
+  pure native new :: String -> String -> DataNode
+
+  pure native createFromEncoded "org.jsoup.nodes.DataNode.createFromEncoded" :: String -> String -> DataNode
+
+  pure native getWholeData :: DataNode -> String
+
+  pure native nodeName :: DataNode -> String
+
+  pure native toString :: DataNode -> String
+
+
+data Comment = pure native org.jsoup.nodes.Comment where
+
+  pure native new :: String -> String -> Comment
+
+  pure native getData :: Comment -> String
+
+  pure native nodeName :: Comment -> String
+
+  pure native toString :: Comment -> String
+
+
+data Attribute = pure native org.jsoup.nodes.Attribute where
+
+  pure native new :: String -> String -> Attribute
+
+  pure native clone :: Attribute -> Attribute
+
+  pure native createFromEncoded "org.jsoup.nodes.Attribute.createFromEncoded" :: String -> String -> Attribute
+
+  pure native equals :: Attribute -> Object -> Bool
+
+  pure native getKey :: Attribute -> String
+
+  pure native getValue :: Attribute -> String
+
+  pure native hashCode :: Attribute -> Int
+
+  pure native html :: Attribute -> String
+
+  pure native toString :: Attribute -> String
+
+
+data List e = pure native java.util.List where
+
+  pure native contains :: List e -> Object -> Bool
+
+  pure native equals :: List e -> Object -> Bool
+
+  pure native get :: List e -> Int -> e
+
+  pure native hashCode :: List e -> Int
+
+  pure native indexOf :: List e -> Object -> Int
+
+  pure native isEmpty :: List e -> Bool
+
+  pure native lastIndexOf :: List e -> Object -> Int
+
+  pure native size :: List e -> Int
+
+  pure native toArray :: List e -> JArray e
+
+instance ListSource List where
+    toList l = ListSource.toList $ List.toArray l
+
+
+data Attributes = pure native org.jsoup.nodes.Attributes where
+
+  pure native new :: () -> Attributes
+
+  pure native asList :: Attributes -> List Attribute
+
+  pure native clone :: Attributes -> Attributes
+
+  pure native equals :: Attributes -> Object -> Bool
+
+  pure native get :: Attributes -> String -> String
+
+  pure native hasKey :: Attributes -> String -> Bool
+
+  pure native hashCode :: Attributes -> Int
+
+  pure native html :: Attributes -> String
+
+  pure native size :: Attributes -> Int
+
+  pure native toString :: Attributes -> String
+
+
+data Node = pure native org.jsoup.nodes.Node where
+
+  pure native absUrl :: Node -> String -> String
+
+  pure native attr :: Node -> String -> String
+
+  pure native attributes :: Node -> Attributes
+
+  pure native baseUri :: Node -> String
+
+  pure native childNode :: Node -> Int -> Maybe Node
+
+  pure native childNodes :: Node -> List Node
+
+  pure native childNodesCopy :: Node -> List Node
+
+  pure native childNodeSize :: Node -> Int
+
+  pure native clone :: Node -> Node
+
+  pure native equals :: Node -> Object -> Bool
+
+  pure native hasAttr :: Node -> String -> Bool
+
+  pure native hashCode :: Node -> Int
+
+  pure native nextSibling :: Node -> Maybe Node
+
+  pure native nodeName :: Node -> String
+
+  pure native outerHtml :: Node -> String
+
+  pure native ownerDocument :: Node -> Maybe Document
+
+  pure native parent :: Node -> Maybe Node
+
+  pure native parentNode :: Node -> Maybe Node
+
+  pure native previousSibling :: Node -> Maybe Node
+
+  pure native siblingIndex :: Node -> Int
+
+  pure native toString :: Node -> String
+
+
+data Elements = pure native org.jsoup.select.Elements where
+
+  pure native attr :: Elements -> String -> String
+
+  pure native hasAttr :: Elements -> String -> Bool
+
+  pure native hasClass :: Elements -> String -> Bool
+
+  pure native hasText :: Elements -> Bool
+
+  pure native html :: Elements -> String
+
+  pure native is :: Elements -> String -> Bool
+
+  pure native last :: Elements -> Element
+
+  pure native outerHtml :: Elements -> String
+
+  pure native parents :: Elements -> Elements
+
+  pure native select :: Elements -> String -> Elements
+
+  pure native text :: Elements -> String
+
+  pure native toString :: Elements -> String
+
+  pure native val :: Elements -> String
+
+
+data Element = pure native org.jsoup.nodes.Element where
+
+  pure native children :: Element -> Elements
+
+  pure native className :: Element -> String
+
+  pure native cssSelector :: Element -> String
+
+  pure native elementSiblingIndex :: Element -> Integer
+
+  pure native equals :: Element -> Object -> Bool
+
+  pure native firstElementSibling :: Element -> Element
+
+  pure native getAllElements :: Element -> Elements
+
+  pure native getElementById :: Element -> String -> Maybe Element
+
+  pure native getElementsByAttribute :: Element -> String -> Elements
+
+  pure native getElementsByAttributeStarting :: Element -> String -> Elements
+
+  pure native getElementsByAttributeValue :: Element -> String -> String -> Elements
+
+  pure native getElementsByAttributeValueContaining :: Element -> String -> String -> Elements
+
+  pure native getElementsByAttributeValueEnding :: Element -> String -> String -> Elements
+
+  pure native getElementsByAttributeValueMatching :: Element -> String -> String -> Elements
+
+  pure native getElementsByAttributeValueNot :: Element -> String -> String -> Elements
+
+  pure native getElementsByAttributeValueStarting :: Element -> String -> String -> Elements
+
+  pure native getElementsByClass :: Element -> String -> Elements
+
+  pure native getElementsByIndexEquals :: Element -> Int -> Elements
+
+  pure native getElementsByIndexGreaterThan :: Element -> Int -> Elements
+
+  pure native getElementsByIndexLessThan :: Element -> Int -> Elements
+
+  pure native getElementsByTag :: Element -> String -> Elements
+
+  pure native getElementsContainingOwnText :: Element -> String -> Elements
+
+  pure native getElementsContainingText :: Element -> String -> Elements
+
+  pure native getElementsMatchingOwnText :: Element -> String -> Elements
+
+  pure native getElementsMatchingText :: Element -> String -> Elements
+
+  pure native hasClass :: Element -> String -> Bool
+
+  pure native hasText :: Element -> Bool
+
+  pure native hashCode :: Element -> Int
+
+  pure native html :: Element -> String
+
+  pure native id :: Element -> String
+
+  pure native isBlock :: Element -> Bool
+
+  pure native lastElementSibling :: Element -> Element
+
+  pure native nextElementSibling :: Element -> Element
+
+  pure native nodeName :: Element -> String
+
+  pure native ownText :: Element -> String
+
+  pure native parent :: Element -> Maybe Element
+
+  pure native parents :: Element -> Elements
+
+  pure native select :: Element -> String -> Elements
+
+  pure native siblingElements :: Element -> Elements
+
+  pure native tagName :: Element -> String
+
+  pure native text :: Element -> String
+
+  pure native toString :: Element -> String
+
+  pure native val :: Element -> String
+
+
+data Charset = pure native java.nio.charset.Charset where
+
+  pure native canEncode :: Charset -> Bool
+
+  pure native compareTo :: Charset -> Charset -> Int
+
+  pure native contains :: Charset -> Charset -> Bool
+
+  pure native displayName :: Charset -> String
+
+  pure native equals :: Charset -> Object -> Bool
+
+  pure native hashCode :: Charset -> Int
+
+  pure native isRegistered :: Charset -> Bool
+
+  pure native name :: Charset -> String
+
+  pure native toString :: Charset -> String
+
+
+data Document = pure native org.jsoup.nodes.Document where
+
+  pure native new :: String -> Document
+
+  pure native body :: Document -> Element
+
+  pure native charset :: Document -> Charset
+
+  pure native clone :: Document -> Document
+
+  pure native createElement :: Document -> String -> Element
+
+  pure native createShell "org.jsoup.nodes.Document.createShell" :: String -> Document
+
+  pure native head :: Document -> Element
+
+  pure native location :: Document -> String
+
+  pure native nodeName :: Document -> String
+
+  pure native outerHtml :: Document -> String
+
+  pure native title :: Document -> String
+
+
+data Parser = pure native org.jsoup.parser.Parser where
+
+  pure native htmlParser "org.jsoup.parser.Parser.htmlParser" :: () -> Parser
+
+  pure native isTrackErrors :: Parser -> Bool
+
+  pure native parse "org.jsoup.parser.Parser.parse" :: String -> String -> Document
+
+  pure native parseBodyFragment "org.jsoup.parser.Parser.parseBodyFragment" :: String -> String -> Document
+
+  pure native parseBodyFragmentRelaxed "org.jsoup.parser.Parser.parseBodyFragmentRelaxed" :: String -> String -> Document
+
+  pure native parseFragment "org.jsoup.parser.Parser.parseFragment" :: String -> Element -> String -> List Node
+
+  pure native parseInput :: Parser -> String -> String -> Document
+
+  pure native parseXmlFragment "org.jsoup.parser.Parser.parseXmlFragment" :: String -> String -> List Node
+
+  pure native unescapeEntities "org.jsoup.parser.Parser.unescapeEntities" :: String -> Bool -> String
+
+  pure native xmlParser "org.jsoup.parser.Parser.xmlParser" :: () -> Parser
+
+
+data Jsoup = pure native org.jsoup.Jsoup where
+
+  pure native parse "org.jsoup.Jsoup.parse" :: String -> Document
+                                        | String -> String -> Parser -> Document
+                                        | String -> String -> Document
+
+  pure native parseBodyFragment "org.jsoup.Jsoup.parseBodyFragment" :: String -> String -> Document
+                                                                     | String -> Document
