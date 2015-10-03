@@ -3,52 +3,54 @@ module frege_jsoup.JsoupParser where
 import frege.data.HashMap HM(HashMap)
 import frege_jsoup.NativeDefs ND
 
-data HTML =
-    Element { tag :: String, attrs :: HashMap String String, content :: [HTML] }
+data SomeML =
+    Element { tag :: String, attrs :: HashMap String String, content :: [SomeML] }
   | Comment String
   | DataNode String
   | TextNode String
-  | XmlDeclaration String
-  | DocumentType String
-  | Document { title :: String, charset :: String, content :: [HTML] }
+  | XmlDeclaration { decl :: String, isProcInstr :: Bool }
+  | DocumentType { name :: String, publicid :: String, systemid :: String }
+  | Document [SomeML]
 
-makeAttributes :: ND.Node -> HashMap String String
-makeAttributes node =
+attributesToMap :: ND.Node -> HashMap String String
+attributesToMap node =
     HM.fromList attributePairs
     where
         attributes = ND.Attributes.asList $ ND.Node.attributes node
         attributesList = ListSource.toList $ ND.List.toArray attributes
         makePair att = (ND.Attribute.getKey att, ND.Attribute.getValue att)
-        attributePairs :: [(String, String)]
         attributePairs = map makePair attributesList
 
 children :: ND.Node -> [ND.Node]
 children node =
-    ListSource.toList childrenArray
-    where
-        childrenArray = ND.List.toArray $ ND.Node.childNodes node
+    ListSource.toList $ ND.List.toArray $ ND.Node.childNodes node
 
-convert :: ND.Node -> HTML
-convert n =
+toSomeML :: ND.Node -> SomeML
+toSomeML n =
     case asDocument of
-        Just d -> Document {
-            title = ND.Document.title d,
-            charset = ND.Charset.name $ ND.Document.charset d,
-            content = map convert $ children d }
+        Just d -> Document (map toSomeML $ children d)
         Nothing -> case asTextNode of
-            Just tn -> TextNode $ ND.Node.toString tn
+            Just tn -> TextNode (ND.TextNode.text tn)
             Nothing -> case asXmlDeclaration of
-                Just xmldef -> XmlDeclaration $ ND.Node.toString xmldef
+                Just xmldef ->
+                    XmlDeclaration { decl, isProcInstr}
+                    where
+                        s = (ND.XmlDeclaration.toString xmldef);
+                        decl = (ND.XmlDeclaration.getWholeDeclaration xmldef);
+                        isProcInstr = String.startsWith s "<!"
                 Nothing -> case asDocumentType of
-                    Just dt -> DocumentType $ ND.Node.toString dt
+                    Just dt -> DocumentType {
+                        name = ND.Node.attr dt "name",
+                        publicid = ND.Node.attr dt "publicid",
+                        systemid = ND.Node.attr dt "systemid" }
                     Nothing -> case asDataNode of
-                        Just dn -> DataNode $ ND.Node.toString dn
+                        Just dn -> DataNode (ND.DataNode.getWholeData dn)
                         Nothing -> case asComment of
-                            Just c -> Comment $ ND.Node.toString c
+                            Just c -> Comment (ND.Comment.getData c)
                             Nothing -> Element {
                                 tag = ND.Node.nodeName n,
-                                attrs = makeAttributes n,
-                                content = map convert $ children n }
+                                attrs = attributesToMap n,
+                                content = map toSomeML $ children n }
     where
         asTextNode = ND.JsoupHelper.nodeAsTextNode n
         asXmlDeclaration = ND.JsoupHelper.nodeAsXmlDeclaration n
@@ -56,3 +58,28 @@ convert n =
         asDataNode = ND.JsoupHelper.nodeAsDataNode n
         asComment = ND.JsoupHelper.nodeAsComment n
         asDocument = ND.JsoupHelper.nodeAsDocument n
+
+derive ArrayElement ND.Node
+
+fromSomeML :: SomeML -> String -> ND.Node
+fromSomeML (Comment s) base = ND.Comment.new s base
+fromSomeML (DataNode s) base = ND.DataNode.new s base
+fromSomeML (TextNode s) base = ND.TextNode.new s base
+fromSomeML (XmlDeclaration { decl, isProcInstr }) base =
+    ND.XmlDeclaration.new decl base isProcInstr
+fromSomeML (DocumentType { name, publicid, systemid }) base =
+    ND.DocumentType.new name publicid systemid base
+fromSomeML (Document es) base =
+    ND.JsoupHelper.createDocument base content
+    where
+        fromSomeML' x = fromSomeML x base
+        content = arrayFromList (map fromSomeML' es)
+fromSomeML (Element { tag, attrs, content }) base =
+    ND.JsoupHelper.createElement tag' base attrs' content'
+    where
+        fromSomeML' x = fromSomeML x base
+        tag' = ND.Tag.valueOf tag
+        content' = arrayFromList (map fromSomeML' content)
+        attrsKeys = arrayFromList (HM.keys attrs)
+        attrsValues = arrayFromList (HM.values attrs)
+        attrs' = ND.JsoupHelper.createAttributes attrsKeys attrsValues

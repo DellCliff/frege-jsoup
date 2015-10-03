@@ -1,24 +1,35 @@
 module Main where
 
+import frege.data.HashMap HM(HashMap)
 import frege_jsoup.JsoupParser JP
 import frege_jsoup.NativeDefs ND
 
-derive Show JP.HTML
+derive Show JP.SomeML
 
 main _ = do
-    html = "<!-- before -->" ++
-        "<!DOCTYPE html>" ++
+    html =
+        "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\"> " ++
         "<html data-foo=\"bar\">" ++
         "<head>" ++
         "<meta charset=\"ISO-8859-1\" /><title>test title</title>" ++
+        "<link src=\"style.css\" />" ++
         "<script>function () { return 'lkjsdfsdf'; }</script>" ++
         "<style>.someclass {color:red;}</style>" ++
         "</head>" ++
+        "<!--before-->" ++
         "<body>" ++
         "<form></form>" ++
         "</body></html>"
     xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><Bag><Item /><Item /></Bag>"
-    parsed_html = JP.convert $ ND.Jsoup.parse html
-    parsed_xml = JP.convert $ ND.Jsoup.parse xml "" $ ND.Parser.xmlParser ()
-    println $ show parsed_html
-    println $ show parsed_xml
+    frege_html = JP.toSomeML $ ND.Jsoup.parse html ""
+    frege_xml = JP.toSomeML $ ND.Jsoup.parse xml "" $ ND.Parser.xmlParser ()
+    jsoup_html = JP.fromSomeML frege_html ""
+    jsoup_xml = JP.fromSomeML frege_xml ""
+    jsoup_xml_2 = JP.fromSomeML (JP.Element{tag="bag", attrs = HashMap.empty, content=[]}) ""
+    jsoup_xml_3 = JP.fromSomeML (JP.Document [JP.Comment "0", JP.Comment "1"]) ""
+    println $ show frege_html
+    println $ show frege_xml
+    println $ ND.Node.outerHtml jsoup_html
+    println $ ND.Node.outerHtml jsoup_xml
+    println $ ND.Node.outerHtml jsoup_xml_2
+    println $ ND.Node.outerHtml jsoup_xml_3

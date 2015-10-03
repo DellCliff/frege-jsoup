@@ -16,6 +16,12 @@ data JsoupHelper = pure native frege_jsoup.JsoupHelper where
 
     pure native nodeAsDocument "frege_jsoup.JsoupHelper.nodeAsDocument" :: Node -> Maybe Document
 
+    pure native createDocument "frege_jsoup.JsoupHelper.createDocument" :: String -> JArray Node -> Document
+
+    pure native createElement "frege_jsoup.JsoupHelper.createElement" :: Tag -> String -> Attributes -> JArray Node -> Element
+
+    pure native createAttributes "frege_jsoup.JsoupHelper.createAttributes" :: JArray String -> JArray String -> Attributes
+
 
 data TextNode = pure native org.jsoup.nodes.TextNode where
 
@@ -230,7 +236,47 @@ data Elements = pure native org.jsoup.select.Elements where
   pure native val :: Elements -> String
 
 
+data Tag = pure native org.jsoup.parser.Tag where
+
+  pure native canContainBlock :: Tag -> Bool
+
+  pure native equals :: Tag -> Object -> Bool
+
+  pure native formatAsBlock :: Tag -> Bool
+
+  pure native getName :: Tag -> String
+
+  pure native hashCode :: Tag -> Int
+
+  pure native isBlock :: Tag -> Bool
+
+  pure native isData :: Tag -> Bool
+
+  pure native isEmpty :: Tag -> Bool
+
+  pure native isFormListed :: Tag -> Bool
+
+  pure native isFormSubmittable :: Tag -> Bool
+
+  pure native isInline :: Tag -> Bool
+
+  pure native isKnownTag :: Tag -> Bool
+
+  -- pure native isKnownTag "org.jsoup.parser.Tag.isKnownTag" :: String -> Bool
+
+  pure native isSelfClosing :: Tag -> Bool
+
+  pure native preserveWhitespace :: Tag -> Bool
+
+  pure native toString :: Tag -> String
+
+  pure native valueOf "org.jsoup.parser.Tag.valueOf" :: String -> Tag
+
+
 data Element = pure native org.jsoup.nodes.Element where
+
+  pure native new :: Tag -> String -> Attributes -> Element
+                   | Tag -> String -> Element
 
   pure native children :: Element -> Elements
 
